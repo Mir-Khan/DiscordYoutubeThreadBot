@@ -2,8 +2,8 @@ import os
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
-import util.youtubeLength as yt
-import util.helperFunctions as hf
+import youtubeLength as yt
+import helperFunctions as hf
 import time
 
 # environment variables loaded here

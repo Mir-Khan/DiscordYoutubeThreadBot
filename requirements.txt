@@ -1,3 +1,8 @@
-bot.py
-util/helperFunctions.py
-util/youtubeLength.py
+discord.py
+dotenv
+pafy
+requests
+discord.ext
+util.youtubeLength
+util.helperFunctions
+time
