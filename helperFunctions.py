@@ -13,7 +13,7 @@ def reason_gen(number_vids, length, max_videos, max_length, video_length, max_vi
         reason = "**You have 10 videos and over 30 minutes of content with this submission.**"
     elif isNumber:
         reason = "**You have 10 videos already.**"
-    elif isLength:
+    elif isLength and not isVideo:
         reason = "**You have over 30 minutes of content with this submission.**"
     elif isVideo:
         reason = "**Your video is longer than 15 minutes.**"
@@ -57,15 +57,18 @@ async def delete_video(original_list, criteria, video, user, index, criteria_giv
     else:
         return True
 
+
 async def help_string(commands, dev_commands, admin):
     command_names_and_params = []
     command_descriptions = []
     for command in commands:
         if command.name in dev_commands and admin:
-            command_names_and_params.append({"name": command.name, "params": command.signature})
+            command_names_and_params.append(
+                {"name": command.name, "params": command.signature})
             command_descriptions.append(command.description)
         elif command.name not in dev_commands and not admin:
-            command_names_and_params.append({"name": command.name, "params": command.signature})
+            command_names_and_params.append(
+                {"name": command.name, "params": command.signature})
             command_descriptions.append(command.description)
     endString = ">>> "
     if admin:
@@ -74,7 +77,10 @@ async def help_string(commands, dev_commands, admin):
     while index < len(command_names_and_params):
         paramString = ""
         if str(command_names_and_params[index]["params"]) != "":
-            paramString = "__*" + str(command_names_and_params[index]["params"]) + "*__"
-        endString += "**" + str(command_names_and_params[index]["name"]) + "** " + paramString + " - " + str(command_descriptions[index]) + "\n"
+            paramString = "__*" + \
+                str(command_names_and_params[index]["params"]) + "*__"
+        endString += "**" + str(command_names_and_params[index]["name"]) + \
+            "** " + paramString + " - " + \
+            str(command_descriptions[index]) + "\n"
         index += 1
     return endString

@@ -15,7 +15,7 @@ DEV = os.getenv('DEV')
 THREAD_CHANNEL = os.getenv('THREAD_CHANNEL')
 MAX_TOTAL = os.getenv('MAX_TOTAL')
 MAX_VIDEOS = os.getenv('MAX_VIDEOS')
-MAX_INDIVIDUAL_VIDEO_LENGTH= os.getenv('MAX_INDIVIDUAL_VIDEO_LENGTH')
+MAX_INDIVIDUAL_VIDEO_LENGTH = os.getenv('MAX_INDIVIDUAL_VIDEO_LENGTH')
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -35,7 +35,8 @@ bot.youtube_channel_name = THREAD_CHANNEL
 # max length of an individual video
 bot.max_individual_video_length = int(MAX_INDIVIDUAL_VIDEO_LENGTH)
 # admin/dev command list
-bot.dev_commands = ["update", "check-queue", "thread_list", "delete-thread", "make", "rename", "help-admin"]
+bot.dev_commands = ["update", "check-queue", "thread_list",
+                    "delete-thread", "make", "rename", "help-admin"]
 
 # TODO
 # NEED TO TEST
@@ -66,13 +67,13 @@ async def on_message(message):
             await channel.send(str(mention) + " Please either enter a command or link in the thread", delete_after=60)
     if hasattr(message.channel, "parent") and message.channel.id == bot.current_thread.id:
         # checking if a link is a short or video
-        isNotShort = True 
+        isNotShort = True
         isNotVid = True
         if "shorts" in message.content:
-            isNotShort = yt.check_short_url(message.content)
+            isNotShort = yt.check_url(message.content)
         else:
             isNotVid = yt.check_url(message.content)
-        
+
         if isNotShort and not isNotVid and message.author.id != bot.user.id:
             # videos dealt with here
             # video properties
@@ -161,6 +162,7 @@ async def delete_video_name(ctx, *, video_name: str):
 
 # command to check how much content a user has in a thread
 
+
 @bot.command(name="check-videos", description="Checks how many videos you have in queue, what videos you entered, and the total length of the videos")
 async def check_videos(ctx):
     try:
@@ -208,7 +210,6 @@ async def rules(ctx):
         print(e)
 
 
-
 # help commands
 
 @bot.command(name="help", description="Shows description of all commands")
@@ -220,6 +221,8 @@ async def help(ctx):
         print(e)
 
 #  for dev commands
+
+
 @bot.command(name="help-admin", description="Shows admin/dev commands")
 async def help_debug(ctx):
     try:
@@ -268,6 +271,7 @@ async def delete_thread(ctx, thread_name: str):
         print(e)
 
 # rename thread command
+
 
 @bot.command(name="rename", description="Renames a thread with the specified name")
 @commands.has_any_role(ADMIN, DEV)
@@ -327,7 +331,7 @@ async def get_thread_messages():
                             bot.thread_list, video_length, video_title, video_submitter, message)
                     elif video_submitter not in bot.thread_list and video_length > bot.max_individual_video_length:
                         await message.delete()
-                elif "shorts" in message.content and not yt.check_short_url(message.content):
+                elif "shorts" in message.content and not yt.check_url(message.content):
                     short_info = yt.get_short_info(message.content)
                     video_submitter = message.author.name
                     video_title = short_info.title
@@ -403,6 +407,6 @@ async def check_thread(ctx):
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CheckFailure):
-        await ctx.send(str(ctx.author.mention) + ' - You do not have the correct role for this command.', delete_after=60)
+        await ctx.send(str(ctx.author.mention) + " - HEY!! KNOCK IT OFF BOZO! YOU CAN'T USE THIS COMMAND!!", delete_after=10)
 
 bot.run(TOKEN)
