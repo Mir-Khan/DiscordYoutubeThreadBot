@@ -1,11 +1,7 @@
 import os
 from dotenv import load_dotenv
-import pafy
 import requests
 from pytube import YouTube
-
-load_dotenv()
-pafy.set_api_key(os.getenv('YOUTUBE_API'))
 
 
 def url_to_time(url):
