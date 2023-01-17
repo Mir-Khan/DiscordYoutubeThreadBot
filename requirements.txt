@@ -2,7 +2,6 @@ discord.py
 dotenv
 pafy
 requests
-discord.ext
-util.youtubeLength
-util.helperFunctions
+youtubeLength
+helperFunctions
 time
