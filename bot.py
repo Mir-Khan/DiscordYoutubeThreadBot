@@ -63,7 +63,7 @@ async def on_message(message):
             channel = message.channel
             mention = message.author.mention
             await message.delete()
-            await channel.send(str(mention) + " Please either enter a command or link in the thread", delete_after=60)
+            await channel.send(str(mention) + " How about you read that again 🙂", delete_after=20)
     if hasattr(message.channel, "parent") and message.channel.id == bot.current_thread.id:
         # checking if a link is a short or video
         isNotShort = True
