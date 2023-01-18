@@ -41,7 +41,6 @@ bot.dev_commands = ["update", "check-queue", "thread_list",
 # TODO
 # NEED TO TEST
 
-
 ####################################################################### EVENTS #######################################################################
 
 @bot.event
@@ -131,7 +130,7 @@ async def on_message(message):
     await bot.process_commands(message)
     # deletes the command after a few seconds to ensure the channel/thread is cleaned up
     if message.content.startswith("!"):
-        await message.delete(delay=60)
+        await message.delete(delay=20)
 
 
 ####################################################################### COMMANDS #######################################################################
@@ -188,7 +187,7 @@ async def check_videos(ctx):
                 endString += "``"
             if inList:
                 break
-        if not inList:
+        if not inList or bot.thread_list[ctx.author.name]["num_vids"] == 0:
             await ctx.send("``You don't have any videos in the thread!``", delete_after=60)
             return
         else:
@@ -224,6 +223,7 @@ async def help(ctx):
 
 
 @bot.command(name="help-admin", description="Shows admin/dev commands")
+@commands.has_any_role(DEV, ADMIN)
 async def help_debug(ctx):
     try:
         endString = await hf.help_string(bot.commands, bot.dev_commands, True)

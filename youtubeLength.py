@@ -21,7 +21,7 @@ def get_short_info(url):
 # if true, not a valid url
 
 
-def check_short_url(url):
+def check_url(url):
     try:
         if "https://" not in url:
             return True
