@@ -219,6 +219,16 @@ async def help(ctx):
     except Exception as e:
         print(e)
 
+#pin command for help
+
+@bot.command(name="help-pin", description="Shows description of all commands")
+async def help(ctx):
+    try:
+        endString = await hf.help_string(bot.commands, bot.dev_commands, False)
+        await ctx.send(endString)
+    except Exception as e:
+        print(e)
+
 #  for dev commands
 
 
