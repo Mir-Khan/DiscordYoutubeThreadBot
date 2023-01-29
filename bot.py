@@ -63,7 +63,7 @@ async def on_message(message):
             channel = message.channel
             mention = message.author.mention
             await message.delete()
-            await channel.send(str(mention) + " How about you put that in the thread 🙂", delete_after=20)
+            await channel.send(str(mention) + " How about you read the rules you bozo 🙂", delete_after=20)
     if hasattr(message.channel, "parent") and message.channel.id == bot.current_thread.id:
         # checking if a link is a short or video
         isNotShort = True
@@ -203,7 +203,7 @@ async def check_videos(ctx):
 async def rules(ctx):
     try:
         user = ctx.author
-        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread indicated in the sidebar of the left, **BELOW** the channel name!"
+        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!"
         await ctx.send(user.mention + rules, delete_after=60)
     except Exception as e:
         print(e)
