@@ -63,7 +63,7 @@ async def on_message(message):
             channel = message.channel
             mention = message.author.mention
             await message.delete()
-            await channel.send(str(mention) + " How about you read that again 🙂", delete_after=20)
+            await channel.send(str(mention) + " How about you put that in the thread 🙂", delete_after=20)
     if hasattr(message.channel, "parent") and message.channel.id == bot.current_thread.id:
         # checking if a link is a short or video
         isNotShort = True
@@ -72,24 +72,24 @@ async def on_message(message):
             isNotShort = yt.check_url(message.content)
         else:
             isNotVid = yt.check_url(message.content)
-
         if isNotShort and not isNotVid and message.author.id != bot.user.id:
             # videos dealt with here
             # video properties
             video_length = yt.url_to_time(message.content)
             video_title = yt.url_to_title(message.content)
             video_submitter = message.author.name
+            
             # checks the thread list to make sure the user hasn't violated the submission rules
-            if video_submitter in bot.thread_list and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length and video_length < bot.max_individual_video_length:
+            if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length and video_length < bot.max_individual_video_length:
                 hf.video_list_exists(
                     bot.thread_list, video_length, video_title, video_submitter, message)
-            elif video_submitter in bot.thread_list and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) > bot.max_length) and video_length > bot.max_individual_video_length:
+            elif video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) > bot.max_length) or video_length > bot.max_individual_video_length:
                 # if they have, their message is deleted and they're told to delete a video using the bot command
                 reason = hf.reason_gen(bot.thread_list[video_submitter]["num_vids"] + 1,
                                        bot.thread_list[video_submitter]["length_vids"] + video_length, bot.max_videos, bot.max_length, video_length, bot.max_individual_video_length)
                 await message.delete()
                 await bot.current_thread.send(str(message.author.mention) + 'Please delete a video/short using the bot command **!delete title** before submitting another video. ' + reason, delete_after=60)
-            elif video_submitter not in bot.thread_list and video_length < bot.max_individual_video_length:
+            elif video_submitter not in bot.thread_list.keys() and video_length < bot.max_individual_video_length:
                 # if its their first submission, they're added to the list
                 hf.video_list_new(
                     bot.thread_list, video_length, video_title, video_submitter, message)
@@ -103,20 +103,20 @@ async def on_message(message):
             video_title = short_info.title
             video_submitter = message.author.name
             # checks the thread list to make sure the user hasn't violated the submission rules
-            if video_submitter in bot.thread_list and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length and video_length < bot.max_individual_video_length:
+            if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length and video_length < bot.max_individual_video_length:
                 hf.video_list_exists(
                     bot.thread_list, video_length, video_title, video_submitter, message)
-            elif video_submitter in bot.thread_list and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) > bot.max_length) and video_length > bot.max_individual_video_length:
+            elif video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) > bot.max_length) or video_length > bot.max_individual_video_length:
                 # if they have, their message is deleted and they're told to delete a video using the bot command
                 reason = hf.reason_gen(bot.thread_list[video_submitter]["num_vids"] + 1,
                                        bot.thread_list[video_submitter]["length_vids"] + video_length, bot.max_videos, bot.max_length, video_length, bot.max_individual_video_length)
                 await message.delete()
                 await bot.current_thread.send(str(message.author.mention) + 'Please delete a video/short using the bot command **!delete title** before submitting another video. ' + reason, delete_after=60)
-            elif video_submitter not in bot.thread_list and video_length < bot.max_individual_video_length:
+            elif video_submitter not in bot.thread_list.keys() and video_length < bot.max_individual_video_length:
                 # if its their first submission, they're added to the list
                 hf.video_list_new(
                     bot.thread_list, video_length, video_title, video_submitter, message)
-            elif video_submitter not in bot.thread_list and video_length > bot.max_individual_video_length:
+            elif video_submitter not in bot.thread_list.keys() and video_length > bot.max_individual_video_length:
                 await message.delete()
                 await bot.current_thread.send(str(message.author.mention) + ' Please submit a video of length 15 minutes or less.', delete_after=60)
         elif message.author.id != bot.user.id and isNotShort and not message.content.startswith(bot.command_prefix) and not isNotVid:
@@ -321,30 +321,30 @@ async def get_thread_messages():
                     video_submitter = message.author.name
                     video_title = yt.url_to_title(message.content)
                     video_length = yt.url_to_time(message.content)
-                    if video_submitter in bot.thread_list and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length:
+                    if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length:
                         hf.video_list_exists_on_start(
                             bot.thread_list, video_length, video_title, video_submitter, message)
-                    elif video_submitter in bot.thread_list and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) >= bot.max_length) and video_length > bot.max_individual_video_length:
+                    elif video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) >= bot.max_length) or video_length > bot.max_individual_video_length:
                         await message.delete()
-                    elif video_submitter not in bot.thread_list and video_length < bot.max_individual_video_length:
+                    elif video_submitter not in bot.thread_list.keys() and video_length < bot.max_individual_video_length:
                         hf.video_list_new(
                             bot.thread_list, video_length, video_title, video_submitter, message)
-                    elif video_submitter not in bot.thread_list and video_length > bot.max_individual_video_length:
+                    elif video_submitter not in bot.thread_list.keys() and video_length > bot.max_individual_video_length:
                         await message.delete()
                 elif "shorts" in message.content and not yt.check_url(message.content):
                     short_info = yt.get_short_info(message.content)
                     video_submitter = message.author.name
                     video_title = short_info.title
                     video_length = short_info.length
-                    if video_submitter in bot.thread_list and ((bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length):
+                    if video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length):
                         hf.video_list_exists_on_start(
                             bot.thread_list, video_length, video_title, video_submitter, message)
-                    elif video_submitter in bot.thread_list and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) >= bot.max_length) and video_length > bot.max_individual_video_length:
+                    elif video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) >= bot.max_length) or video_length > bot.max_individual_video_length:
                         await message.delete()
-                    elif video_submitter not in bot.thread_list and video_length < bot.max_individual_video_length:
+                    elif video_submitter not in bot.thread_list.keys() and video_length < bot.max_individual_video_length:
                         hf.video_list_new(
                             bot.thread_list, video_length, video_title, video_submitter, message)
-                    elif video_submitter not in bot.thread_list and video_length > bot.max_individual_video_length:
+                    elif video_submitter not in bot.thread_list.keys() or video_length > bot.max_individual_video_length:
                         await message.delete()
     except Exception as e:
         print(e)
