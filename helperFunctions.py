@@ -66,7 +66,7 @@ async def help_string(commands, dev_commands, admin):
             command_names_and_params.append(
                 {"name": command.name, "params": command.signature})
             command_descriptions.append(command.description)
-        elif command.name not in dev_commands and not admin:
+        elif command.name not in dev_commands and command.name != 'help-pin' and not admin:
             command_names_and_params.append(
                 {"name": command.name, "params": command.signature})
             command_descriptions.append(command.description)

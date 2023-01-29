@@ -221,7 +221,7 @@ async def help(ctx):
 
 #pin command for help
 
-@bot.command(name="help-pin", description="Shows description of all commands")
+@bot.command(name="help-pin", description="Help command to help pin the commands for users")
 async def help(ctx):
     try:
         endString = await hf.help_string(bot.commands, bot.dev_commands, False)
