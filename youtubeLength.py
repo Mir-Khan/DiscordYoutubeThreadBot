@@ -24,7 +24,7 @@ def url_to_title(url):
 
 
 def check_link(url):
-    if re.search("youtube.com") or re.search("youtu.be"):
+    if re.search("youtube.com", url) or re.search("youtu.be", url):
         return True
     else:
         return False
