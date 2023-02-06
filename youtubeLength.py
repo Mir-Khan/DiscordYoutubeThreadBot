@@ -15,12 +15,15 @@ def url_to_time(url):
 
 
 def url_to_title(url):
-    text_split = url.split()
-    final_url = ""
-    for text in text_split:
-        if check_link(text):
-            final_url = text
-    return YouTube(final_url).title
+    try:
+        text_split = url.split()
+        final_url = ""
+        for text in text_split:
+            if check_link(text):
+                final_url = text
+        return YouTube(final_url).title
+    except Exception as e:
+        return "Title not found"
 
 
 def check_link(url):
