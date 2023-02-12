@@ -27,13 +27,8 @@ bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 bot.thread_list = {}
 # gets the most current thread created
 bot.current_thread = None
-# using these variables so these can be easily changes
-bot.max_videos = int(MAX_VIDEOS)
-bot.max_length = int(MAX_TOTAL)  # 30 minutes in seconds
 # name of the channel with the threads
 bot.youtube_channel_name = THREAD_CHANNEL
-# max length of an individual video
-bot.max_individual_video_length = int(MAX_INDIVIDUAL_VIDEO_LENGTH)
 # admin/dev command list
 bot.dev_commands = ["update", "check-queue", "thread_list",
                     "delete-thread", "make", "rename", "help-admin"]
@@ -334,13 +329,9 @@ async def get_thread_messages():
                     if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length:
                         hf.video_list_exists_on_start(
                             bot.thread_list, video_length, video_title, video_submitter, message)
-                    elif video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) >= bot.max_length) or video_length > bot.max_individual_video_length:
-                        await message.delete()
                     elif video_submitter not in bot.thread_list.keys() and video_length < bot.max_individual_video_length:
                         hf.video_list_new(
                             bot.thread_list, video_length, video_title, video_submitter, message)
-                    elif video_submitter not in bot.thread_list.keys() and video_length > bot.max_individual_video_length:
-                        await message.delete()
                 elif "shorts" in message.content and not yt.check_url(message.content):
                     short_info = yt.get_short_info(message.content)
                     video_submitter = message.author.name
@@ -349,16 +340,44 @@ async def get_thread_messages():
                     if video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length):
                         hf.video_list_exists_on_start(
                             bot.thread_list, video_length, video_title, video_submitter, message)
-                    elif video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) > bot.max_videos or (bot.thread_list[video_submitter]["length_vids"] + video_length) >= bot.max_length) or video_length > bot.max_individual_video_length:
-                        await message.delete()
                     elif video_submitter not in bot.thread_list.keys() and video_length < bot.max_individual_video_length:
                         hf.video_list_new(
                             bot.thread_list, video_length, video_title, video_submitter, message)
-                    elif video_submitter not in bot.thread_list.keys() or video_length > bot.max_individual_video_length:
-                        await message.delete()
     except Exception as e:
         print(e)
 
+# makes sure the thread has the proper amount of messages and time-lengths
+
+async def delete_thread_messages():
+    try:
+        if bot.current_thread is not None:
+            async for user in bot.thread_list:
+                if bot.thread_list[user]['length_vids'] > bot.max_length or bot.thread_list[user]['num_vids'] > bot.max_videos:
+                    bot.thread_list[user]['length_vids'] -= bot.thread_list[user]['youtube_videos'][-1].length
+                    bot.thread_list[user]['num_vids'] -= 1
+                    video_title = bot.thread_list[user]['youtube_videos'][-1].title
+                    message_copy = []
+                    for message in reversed(bot.thread_list[user]['messages']):
+                        if ("youtu.be" in message.content or "youtube.com" in message.content or "/shorts/" in message.content) and (yt.url_to_title(message.content) == video_title):
+                            await bot.current_thread.send(str(message.author.mention) + " Your video titled " + str(video_title) + " was deleted after checking the thread. If this wasn't right, please message Rykers and let him know! (Another bug :PepeHands:)")
+                            await message.delete()
+                        else:
+                            message_copy.append(message)
+                    bot.thread_list[user]['messages'] = message_copy
+                    bot.thread_list[user]['youtube_videos'] = bot.thread_list[user]['youtube_videos'][:-1]
+    except Exception as e:
+        print(e)
+
+async def set_globals():
+    try:
+        bot.max_videos = int(MAX_VIDEOS)
+        bot.max_length = int(MAX_TOTAL)
+        bot.max_individual_video_length = int(MAX_INDIVIDUAL_VIDEO_LENGTH)
+    except:
+        # resort to defaults if not able to retreive environment
+        bot.max_videos = 10
+        bot.max_length = 1860
+        bot.max_individual_video_length = 960
 # on bot start
 
 
@@ -371,8 +390,10 @@ async def on_ready():
 
 @tasks.loop(hours=24)
 async def update_list_task():
+    await set_globals()
     await update_current_thread()
     await get_thread_messages()
+    await delete_thread_messages()
 
 ####################################################################### DEBUG COMMANDS AND ERROR HANDLING #######################################################################
 
