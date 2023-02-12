@@ -432,6 +432,16 @@ async def check_thread(ctx):
     except Exception as e:
         print(e)
 
+# run the daily run commands
+
+@bot.command(name="daily", description="runs the daily tasks")
+@commands.has_any_role(DEV, ADMIN)
+async def run_dailies():
+    try:
+        update_list_task()
+    except Exception as e:
+        print(e)
+
 # error for the improper role
 
 
