@@ -351,7 +351,7 @@ async def get_thread_messages():
 async def delete_thread_messages():
     try:
         if bot.current_thread is not None:
-            async for user in bot.thread_list:
+            for user in bot.thread_list:
                 if bot.thread_list[user]['length_vids'] > bot.max_length or bot.thread_list[user]['num_vids'] > bot.max_videos:
                     bot.thread_list[user]['length_vids'] -= bot.thread_list[user]['youtube_videos'][-1].length
                     bot.thread_list[user]['num_vids'] -= 1
