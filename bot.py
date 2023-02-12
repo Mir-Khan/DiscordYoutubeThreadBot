@@ -438,7 +438,8 @@ async def check_thread(ctx):
 @commands.has_any_role(DEV, ADMIN)
 async def run_dailies(ctx):
     try:
-        update_list_task()
+        await update_list_task()
+        await ctx.message.delete()
     except Exception as e:
         print(e)
 
