@@ -210,7 +210,7 @@ async def rules(ctx):
     try:
         user = ctx.author
         rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!"
-        await ctx.send(user.mention + rules)
+        await ctx.send(rules)
     except Exception as e:
         print(e)
 
