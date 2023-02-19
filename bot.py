@@ -72,7 +72,7 @@ async def on_message(message):
             # video properties
             video_length = yt.url_to_time(message.content)
             video_title = yt.url_to_title(message.content)
-            video_submitter = message.author.name
+            video_submitter = message.author.id
             
             # checks the thread list to make sure the user hasn't violated the submission rules
             if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length and video_length < bot.max_individual_video_length:
@@ -96,7 +96,7 @@ async def on_message(message):
             short_info = yt.get_short_info(message.content)
             video_length = short_info.length
             video_title = short_info.title
-            video_submitter = message.author.name
+            video_submitter = message.author.id
             # checks the thread list to make sure the user hasn't violated the submission rules
             if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length and video_length < bot.max_individual_video_length:
                 hf.video_list_exists(
@@ -323,7 +323,7 @@ async def get_thread_messages():
         if bot.current_thread is not None:
             async for message in bot.current_thread.history(limit=3000):
                 if ("youtu.be" in message.content or "youtube.com" in message.content) and "shorts" not in message.content and not yt.check_url(message.content):
-                    video_submitter = message.author.name
+                    video_submitter = message.author.id
                     video_title = yt.url_to_title(message.content)
                     video_length = yt.url_to_time(message.content)
                     if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length:
@@ -334,7 +334,7 @@ async def get_thread_messages():
                             bot.thread_list, video_length, video_title, video_submitter, message)
                 elif "shorts" in message.content and not yt.check_url(message.content):
                     short_info = yt.get_short_info(message.content)
-                    video_submitter = message.author.name
+                    video_submitter = message.author.id
                     video_title = short_info.title
                     video_length = short_info.length
                     if video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length):
@@ -412,9 +412,10 @@ async def check_list(ctx):
 @commands.has_any_role(DEV, ADMIN)
 async def update(ctx):
     try:
-        current_channel_id = (discord.utils.get(
-            ctx.guild.channels, name=str(ctx.channel))).id
-        bot.current_thread = (bot.get_channel(current_channel_id).threads)[-1]
+        await set_globals()
+        await update_current_thread()
+        await get_thread_messages()
+        await delete_thread_messages()
     except Exception as e:
         await print(e)
 

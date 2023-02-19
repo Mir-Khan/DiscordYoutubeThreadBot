@@ -23,11 +23,14 @@ def reason_gen(number_vids, length, max_videos, max_length, video_length, max_vi
 
 
 def video_list_exists(original_list, video_length, video_title, video_submitter, message):
-    original_list[video_submitter]["num_vids"] += 1
-    original_list[video_submitter]["length_vids"] += video_length
-    original_list[video_submitter]["messages"].append(message)
-    original_list[video_submitter]["youtube_videos"].append(
-        {"title": video_title, "length": video_length, "url": message.content})
+    try:
+        original_list[video_submitter]["num_vids"] += 1
+        original_list[video_submitter]["length_vids"] += video_length
+        original_list[video_submitter]["messages"].append(message)
+        original_list[video_submitter]["youtube_videos"].append(
+            {"title": video_title, "length": video_length, "url": message.content})
+    except:
+        video_list_new(original_list, video_length, video_title, video_submitter, message)
 
 
 def video_list_exists_on_start(original_list, video_length, video_title, video_submitter, message):
@@ -47,14 +50,17 @@ def video_list_new(original_list, video_length, video_title, video_submitter, me
 
 # deletes videos and reflects the change in the thread list
 async def delete_video(original_list, criteria, video, user, index, criteria_given):
-    if video[criteria] == criteria_given:
-        original_list[user]["num_vids"] -= 1
-        original_list[user]["length_vids"] -= video["length"]
-        del original_list[user]["youtube_videos"][index]
-        await original_list[user]["messages"][index].delete()
-        del original_list[user]["messages"][index]
-        return False
-    else:
+    try:
+        if video[criteria] == criteria_given:
+            original_list[user]["num_vids"] -= 1
+            original_list[user]["length_vids"] -= video["length"]
+            del original_list[user]["youtube_videos"][index]
+            await original_list[user]["messages"][index].delete()
+            del original_list[user]["messages"][index]
+            return False
+        else:
+            return True
+    except:
         return True
 
 
