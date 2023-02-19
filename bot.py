@@ -204,6 +204,16 @@ async def rules(ctx):
         print(e)
 
 
+@bot.command(name="rules-pin", description="Shows the submission rules")
+@commands.has_any_role(DEV, ADMIN)
+async def rules(ctx):
+    try:
+        user = ctx.author
+        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!"
+        await ctx.send(user.mention + rules)
+    except Exception as e:
+        print(e)
+
 # help commands
 
 @bot.command(name="help", description="Shows description of all commands")
@@ -217,6 +227,7 @@ async def help(ctx):
 #pin command for help
 
 @bot.command(name="help-pin", description="Help command to help pin the commands for users")
+@commands.has_any_role(DEV, ADMIN)
 async def help(ctx):
     try:
         endString = await hf.help_string(bot.commands, bot.dev_commands, False)
