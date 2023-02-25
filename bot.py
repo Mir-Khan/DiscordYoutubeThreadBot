@@ -162,7 +162,7 @@ async def delete_video_num(ctx, *, video_index: int):
             if ctx.author.id in bot.thread_list:
                 original_number = bot.thread_list[ctx.author.id]["num_vids"]
                 video_name = bot.thread_list[ctx.author.id]["youtube_videos"][video_index - 1]["title"]
-                hf.delete_video_by_num(bot.thread_list, ctx.author.id, video_index - 1)
+                await hf.delete_video_by_num(bot.thread_list, ctx.author.id, video_index - 1)
             if original_number != bot.thread_list[ctx.author.id]["num_vids"]:
                 await ctx.send(str(ctx.author.mention) + " Video(s) with title: " + video_name + " was deleted!", delete_after=60)
     except Exception as e:
