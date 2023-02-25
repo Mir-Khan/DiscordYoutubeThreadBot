@@ -161,7 +161,7 @@ async def delete_video_num(ctx, *, video_index: str):
     try:
         if bot.thread_list:
             if ctx.author.id in bot.thread_list:
-                index = int(video_index - 1)
+                index = int(video_index) - 1
                 original_number = bot.thread_list[ctx.author.id]["num_vids"]
                 video_name = bot.thread_list[ctx.author.id]["youtube_videos"][index]["title"]
                 await hf.delete_video_by_num(bot.thread_list, ctx.author.id, index)
