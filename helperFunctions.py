@@ -70,7 +70,7 @@ async def delete_video_by_num(original_list, user, index):
         original_list[user]["num_vids"] -= 1
         original_list[user]["length_vids"] -= original_list[user]["youtube_videos"][index]["length"]
         original_list[user]["youtube_videos"].pop(index)
-        await original_list[user]["messages"][index].delete
+        await original_list[user]["messages"][index].delete()
         original_list[user]["messages"].pop(index)
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
