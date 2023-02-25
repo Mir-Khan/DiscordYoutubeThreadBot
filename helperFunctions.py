@@ -1,3 +1,5 @@
+import sys
+import os
 def reason_gen(number_vids, length, max_videos, max_length, video_length, max_video_length):
     isNumber = False
     isLength = False
@@ -64,11 +66,16 @@ async def delete_video_by_name(original_list, current_video_name, video, user, i
         return True
 
 async def delete_video_by_num(original_list, user, index):
-    original_list[user]["num_vids"] -= 1
-    original_list[user]["length_vids"] -= original_list[user]["youtube_videos"]["length"]
-    original_list[user]["youtube_videos"].pop(index)
-    await original_list[user]["messages"][index].delete
-    original_list[user]["messages"].pop(index)
+    try:
+        original_list[user]["num_vids"] -= 1
+        original_list[user]["length_vids"] -= original_list[user]["youtube_videos"]["length"]
+        original_list[user]["youtube_videos"].pop(index)
+        await original_list[user]["messages"][index].delete
+        original_list[user]["messages"].pop(index)
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 async def help_string(commands, dev_commands, admin):
     command_names_and_params = []
