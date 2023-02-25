@@ -5,6 +5,7 @@ from discord.ext import commands, tasks
 import youtubeLength as yt
 import helperFunctions as hf
 import time
+import sys
 
 # environment variables loaded here
 load_dotenv()
@@ -168,7 +169,9 @@ async def delete_video_num(ctx, *, video_index: str):
                 await ctx.send(str(ctx.author.mention) + " Video(s) with title: " + video_name + " was deleted!", delete_after=60)
     except Exception as e:
         await ctx.send(str(ctx.author.mention) + " something went wrong! Make sure you put in an appropriate index :kermitW: . Type !help if you aren't sure what that means.", delete_after=60)
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # command to check how much content a user has in a thread
 
