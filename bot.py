@@ -156,14 +156,14 @@ async def delete_video_name(ctx, *, video_name: str):
         print(e)
 
 @bot.command(name="delete-num", description="Deletes videos in the list of videos with the matching index (example, if you want to delete your first video, use !delete-num 1)")
-async def delete_video_num(ctx, *, video_index):
+async def delete_video_num(ctx, *, video_index: str):
     try:
         if bot.thread_list:
             if ctx.author.id in bot.thread_list:
-                index = int(video_index)
+                index = int(video_index - 1)
                 original_number = bot.thread_list[ctx.author.id]["num_vids"]
-                video_name = bot.thread_list[ctx.author.id]["youtube_videos"][index - 1]["title"]
-                await hf.delete_video_by_num(bot.thread_list, ctx.author.id, index - 1)
+                video_name = bot.thread_list[ctx.author.id]["youtube_videos"][index]["title"]
+                await hf.delete_video_by_num(bot.thread_list, ctx.author.id, index)
             if original_number != bot.thread_list[ctx.author.id]["num_vids"]:
                 await ctx.send(str(ctx.author.mention) + " Video(s) with title: " + video_name + " was deleted!", delete_after=60)
     except Exception as e:
