@@ -68,7 +68,7 @@ async def delete_video_by_name(original_list, current_video_name, video, user, i
 async def delete_video_by_num(original_list, user, index):
     try:
         original_list[user]["num_vids"] -= 1
-        original_list[user]["length_vids"] -= original_list[user]["youtube_videos"]["length"]
+        original_list[user]["length_vids"] -= original_list[user]["youtube_videos"][index]["length"]
         original_list[user]["youtube_videos"].pop(index)
         await original_list[user]["messages"][index].delete
         original_list[user]["messages"].pop(index)
