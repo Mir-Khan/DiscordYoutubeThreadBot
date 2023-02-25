@@ -31,7 +31,7 @@ bot.current_thread = None
 bot.youtube_channel_name = THREAD_CHANNEL
 # admin/dev command list
 bot.dev_commands = ["update", "check-queue", "thread_list",
-                    "delete-thread", "make", "rename", "help-admin", "rules-pin", "help-in", "daily"]
+                    "delete-thread", "make", "rename", "help-admin", "rules-pin", "help-pin", "daily"]
 
 # TODO
 # NEED TO TEST
