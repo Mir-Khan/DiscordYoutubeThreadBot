@@ -49,9 +49,9 @@ def video_list_new(original_list, video_length, video_title, video_submitter, me
 
 
 # deletes videos and reflects the change in the thread list
-async def delete_video(original_list, criteria, video, user, index, criteria_given):
+async def delete_video_by_name(original_list, current_video_name, video, user, index, video_name):
     try:
-        if video[criteria] == criteria_given:
+        if video[current_video_name] == video_name:
             original_list[user]["num_vids"] -= 1
             original_list[user]["length_vids"] -= video["length"]
             del original_list[user]["youtube_videos"][index]
@@ -63,6 +63,11 @@ async def delete_video(original_list, criteria, video, user, index, criteria_giv
     except:
         return True
 
+async def delete_video_by_num(original_list, user, index):
+    original_list[user]["num_vids"] -= 1
+    original_list[user]["length_vids"] -= original_list[user]["youtube_videos"]["length"]
+    original_list[user]["youtube_videos"].pop(index)
+    original_list[user]["messages"].pop(index)
 
 async def help_string(commands, dev_commands, admin):
     command_names_and_params = []

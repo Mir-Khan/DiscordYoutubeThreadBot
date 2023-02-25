@@ -134,7 +134,7 @@ async def on_message(message):
 
 # delete video commands
 
-@bot.command(name="delete", description="Deletes all videos with the matching title")
+@bot.command(name="delete-name", description="Deletes all videos with the matching title")
 async def delete_video_name(ctx, *, video_name: str):
     try:
         if bot.thread_list:
@@ -143,7 +143,7 @@ async def delete_video_name(ctx, *, video_name: str):
                 # note the list goes in reverse to go from the top of the channel and the index is -1 to ensure we don't lose our place after deleting
                 index = -1
                 for video in reversed(bot.thread_list[ctx.author.id]["youtube_videos"]):
-                    increase = await hf.delete_video(bot.thread_list, "title", video, ctx.author.id, index, video_name)
+                    increase = await hf.delete_video_by_name(bot.thread_list, "title", video, ctx.author.id, index, video_name)
                     if increase:
                         index -= 1
         if original_number != bot.thread_list[ctx.author.id]["num_vids"]:
@@ -152,6 +152,21 @@ async def delete_video_name(ctx, *, video_name: str):
             await ctx.send(str(ctx.author.mention) + " Video(s) with title: " + video_name + " was not found!", delete_after=60)
 
     except Exception as e:
+        await ctx.send(str(ctx.author.mention) + " something went wrong! Make sure you put in an appropriate name :kermitW:. Type !help if you aren't sure.", delete_after=60)
+        print(e)
+
+@bot.command(name="delete-num", description="Deletes videos in the list of videos with the matching index (example, if you want to delete your first video, use !delete-num 1)")
+async def delete_video_num(ctx, *, video_index: int):
+    try:
+        if bot.thread_list:
+            if ctx.author.id in bot.thread_list:
+                original_number = bot.thread_list[ctx.author.id]["num_vids"]
+                video_name = bot.thread_list[ctx.author.id]["youtube_videos"][video_index - 1]["name"]
+                hf.delete_video_by_num(bot.thread_list, ctx.author.id, video_index - 1)
+            if original_number != bot.thread_list[ctx.author.id]["num_vids"]:
+                await ctx.send(str(ctx.author.mention) + " Video(s) with title: " + video_name + " was deleted!", delete_after=60)
+    except Exception as e:
+        await ctx.send(str(ctx.author.mention) + " something went wrong! Make sure you put in an appropriate index :kermitW:. Type !help if you aren't sure what that means.", delete_after=60)
         print(e)
 
 # command to check how much content a user has in a thread
@@ -209,7 +224,7 @@ async def rules(ctx):
 async def rules(ctx):
     try:
         user = ctx.author
-        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!"
+        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!\n4.Use !help to see the list of commands available"
         await ctx.send(rules)
     except Exception as e:
         print(e)
