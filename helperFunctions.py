@@ -26,16 +26,25 @@ def reason_gen(number_vids, length, max_videos, max_length, video_length, max_vi
 
 def video_list_exists(original_list, video_length, video_title, video_submitter, message):
     try:
-        original_list[video_submitter]["num_vids"] += 1
-        original_list[video_submitter]["length_vids"] += video_length
-        original_list[video_submitter]["messages"].append(message)
-        original_list[video_submitter]["youtube_videos"].append(
-            {"title": video_title, "length": video_length, "url": message.content})
+        videoExists = False
+        for video in original_list[video_submitter]["youtube_videos"]:
+            if video_title == video["title"]:
+                videoExists = True
+        if(not videoExists):
+            original_list[video_submitter]["num_vids"] += 1
+            original_list[video_submitter]["length_vids"] += video_length
+            original_list[video_submitter]["messages"].append(message)
+            original_list[video_submitter]["youtube_videos"].append(
+                {"title": video_title, "length": video_length, "url": message.content})
     except:
         video_list_new(original_list, video_length, video_title, video_submitter, message)
 
 
 def video_list_exists_on_start(original_list, video_length, video_title, video_submitter, message):
+    videoExists = False
+    for video in original_list[video_submitter]["youtube_videos"]:
+        if video_title == video["title"]:
+            videoExists = True
     original_list[video_submitter]["num_vids"] += 1
     original_list[video_submitter]["length_vids"] += video_length
     original_list[video_submitter]["messages"].insert(0, message)
