@@ -45,11 +45,12 @@ def video_list_exists_on_start(original_list, video_length, video_title, video_s
     for video in original_list[video_submitter]["youtube_videos"]:
         if video_title == video["title"]:
             videoExists = True
-    original_list[video_submitter]["num_vids"] += 1
-    original_list[video_submitter]["length_vids"] += video_length
-    original_list[video_submitter]["messages"].insert(0, message)
-    original_list[video_submitter]["youtube_videos"].insert(0,
-                                                            {"title": video_title, "length": video_length, "url": message.content})
+    if(not videoExists):
+        original_list[video_submitter]["num_vids"] += 1
+        original_list[video_submitter]["length_vids"] += video_length
+        original_list[video_submitter]["messages"].insert(0, message)
+        original_list[video_submitter]["youtube_videos"].insert(0,
+                                                                {"title": video_title, "length": video_length, "url": message.content})
 
 # if the author isnt already in the list
 
