@@ -221,7 +221,7 @@ async def check_videos(ctx):
 async def rules(ctx):
     try:
         user = ctx.author
-        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!"
+        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 45 minutes of content\n3. No video longer than 10 minutes\n4.Only message in the latest thread!"
         await ctx.send(user.mention + rules, delete_after=60)
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -233,7 +233,7 @@ async def rules(ctx):
 @commands.has_any_role(DEV, ADMIN)
 async def rules(ctx):
     try:
-        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!\n4.Use !help to see the list of commands available"
+        rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 45 minutes of content\n3. No video longer than 10 minutes\n4.Only message in the latest thread!\n5.Use !help to see the list of commands available"
         await ctx.send(rules)
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -449,6 +449,7 @@ async def update_list_task():
     await update_current_thread()
     await get_thread_messages()
     await delete_thread_messages()
+    print("done updating")
 
 ####################################################################### DEBUG COMMANDS AND ERROR HANDLING #######################################################################
 
