@@ -45,7 +45,7 @@ async def on_message(message):
     if not message.guild:
         return
     # this catches the initial message in a thread by the bot to pin it
-    if message.content == "Please place your videos here! Max of 10 videos, total content should **NOT** exceed 30 minutes, and videos should not be longer than 15 minutes":
+    if message.content == "Please place your videos here! Max of 10 videos, total content should **NOT** exceed 45 minutes, and videos should not be longer than 10 minutes":
         await message.pin()
     # this makes sure the bot only runs in the desired channel
     if message.channel.name != bot.youtube_channel_name and message.channel.name != bot.current_thread.name:
@@ -290,7 +290,7 @@ async def help_debug(ctx):
 async def create_thread(ctx, thread_name: str):
     try:
         bot.current_thread = await ctx.channel.create_thread(name=thread_name, type=discord.ChannelType.public_thread)
-        await bot.current_thread.send("Please place your videos here! Max of 10 videos, total content should **NOT** exceed 30 minutes, and videos should not be longer than 15 minutes")
+        await bot.current_thread.send("Please place your videos here! Max of 10 videos, total content should **NOT** exceed 45 minutes, and videos should not be longer than 10 minutes")
         await update_current_thread()
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
