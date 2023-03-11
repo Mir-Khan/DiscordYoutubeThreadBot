@@ -50,7 +50,7 @@ async def on_message(message):
     # this makes sure the bot only runs in the desired channel
     if message.channel.name != bot.youtube_channel_name and message.channel.name != bot.current_thread.name:
         return
-    if message.channel.name == bot.youtube_channel_name and message.author.id != bot.user.id and not message.content.startswith(bot.command_prefix):
+    if message.channel.name == bot.youtube_channel_name and str(message.author.id) != bot.user.id and not message.content.startswith(bot.command_prefix):
         isAdmin = False
         for role in message.author.roles:
             if role.name == ADMIN or role.name == DEV:
@@ -68,12 +68,12 @@ async def on_message(message):
             isNotShort = yt.check_url(message.content)
         else:
             isNotVid = yt.check_url(message.content)
-        if isNotShort and not isNotVid and message.author.id != bot.user.id:
+        if isNotShort and not isNotVid and str(message.author.id) != bot.user.id:
             # videos dealt with here
             # video properties
             video_length = yt.url_to_time(message.content)
             video_title = yt.url_to_title(message.content)
-            video_submitter = message.author.id
+            video_submitter = str(message.author.id)
             
             # checks the thread list to make sure the user hasn't violated the submission rules
             if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length and video_length < bot.max_individual_video_length:
@@ -92,12 +92,12 @@ async def on_message(message):
             elif video_submitter not in bot.thread_list and video_length > bot.max_individual_video_length:
                 await message.delete()
                 await bot.current_thread.send(str(message.author.mention) + ' Please submit a video of length 15 minutes or less.', delete_after=60)
-        elif message.author.id != bot.user.id and not isNotShort:
+        elif str(message.author.id) != bot.user.id and not isNotShort:
             # this section deals with youtube shorts
             short_info = yt.get_short_info(message.content)
             video_length = short_info.length
             video_title = short_info.title
-            video_submitter = message.author.id
+            video_submitter = str(message.author.id)
             # checks the thread list to make sure the user hasn't violated the submission rules
             if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length and video_length < bot.max_individual_video_length:
                 hf.video_list_exists(
@@ -115,11 +115,11 @@ async def on_message(message):
             elif video_submitter not in bot.thread_list.keys() and video_length > bot.max_individual_video_length:
                 await message.delete()
                 await bot.current_thread.send(str(message.author.mention) + ' Please submit a video of length 15 minutes or less.', delete_after=60)
-        elif message.author.id != bot.user.id and isNotShort and not message.content.startswith(bot.command_prefix) and not isNotVid:
+        elif str(message.author.id) != bot.user.id and isNotShort and not message.content.startswith(bot.command_prefix) and not isNotVid:
             # if not a valid youtube video, message is deleted and user is notified
             await message.delete()
             await bot.current_thread.send(str(message.author.mention) + " Please submit a valid YouTube video.", delete_after=60)
-        elif message.author.id != bot.user.id and not isNotShort and not message.content.startswith(bot.command_prefix) and isNotVid:
+        elif str(message.author.id) != bot.user.id and not isNotShort and not message.content.startswith(bot.command_prefix) and isNotVid:
             # if not a valid youtube video, message is deleted and user is notified
             await message.delete()
             await bot.current_thread.send(str(message.author.mention) + " Please submit a valid YouTube short.", delete_after=60)
@@ -154,7 +154,9 @@ async def delete_video_name(ctx, *, video_name: str):
 
     except Exception as e:
         await ctx.send(str(ctx.author.mention) + " something went wrong! Make sure you put in an appropriate name :kermitW: . Type !help if you aren't sure.", delete_after=60)
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 @bot.command(name="delete-num", description="Deletes videos in the list of videos with the matching index (example, if you want to delete your first video, use !delete-num 1)")
 async def delete_video_num(ctx, *, video_index: str):
@@ -208,7 +210,9 @@ async def check_videos(ctx):
             await ctx.send(endString, delete_after=60)
 
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # command to notify user of rules
 
@@ -220,7 +224,9 @@ async def rules(ctx):
         rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!"
         await ctx.send(user.mention + rules, delete_after=60)
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 
 @bot.command(name="rules-pin", description="Shows the submission rules")
@@ -230,7 +236,9 @@ async def rules(ctx):
         rules = "\n>>> **__RULES:__**\n1. No more than 10 videos\n2.No more than a total of 30 minutes of content\n3.Only message in the latest thread!\n4.Use !help to see the list of commands available"
         await ctx.send(rules)
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # help commands
 
@@ -240,7 +248,9 @@ async def help(ctx):
         endString = await hf.help_string(bot.commands, bot.dev_commands, False)
         await ctx.send(endString, delete_after=60)
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 #pin command for help
 
@@ -251,7 +261,9 @@ async def help(ctx):
         endString = await hf.help_string(bot.commands, bot.dev_commands, False)
         await ctx.send(endString)
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 #  for dev commands
 
@@ -264,7 +276,9 @@ async def help_debug(ctx):
         dms = await ctx.author.create_dm()
         await dms.send(endString)
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 #################### COMMANDS FOR ADMINS AND DEVS ####################
 
@@ -279,7 +293,9 @@ async def create_thread(ctx, thread_name: str):
         await bot.current_thread.send("Please place your videos here! Max of 10 videos, total content should **NOT** exceed 30 minutes, and videos should not be longer than 15 minutes")
         await update_current_thread()
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # delete thread command
 
@@ -302,7 +318,9 @@ async def delete_thread(ctx, thread_name: str):
             await ctx.send("``" + thread_name + " was deleted!``", delete_after=60)
     except Exception as e:
         await ctx.send("``There is no thread to delete!``", delete_after=60)
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # rename thread command
 
@@ -323,7 +341,9 @@ async def rename_thread(ctx, *, new_name: str):
                     else:
                         await ctx.send("There is no thread to edit!", delete_after=60)
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 ####################################################################### TASKS AND STARTUP #######################################################################
 
@@ -342,7 +362,9 @@ async def update_current_thread():
                 bot.current_thread = thread_channel.threads[-1]
         print("got it")
     except Exception as e:
-        await print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # makes sure on start up the bot is working properly
 
@@ -352,7 +374,7 @@ async def get_thread_messages():
         if bot.current_thread is not None:
             async for message in bot.current_thread.history(limit=3000):
                 if ("youtu.be" in message.content or "youtube.com" in message.content) and "shorts" not in message.content and not yt.check_url(message.content):
-                    video_submitter = message.author.id
+                    video_submitter = str(message.author.id)
                     video_title = yt.url_to_title(message.content)
                     video_length = yt.url_to_time(message.content)
                     if video_submitter in bot.thread_list.keys() and (bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length:
@@ -363,7 +385,7 @@ async def get_thread_messages():
                             bot.thread_list, video_length, video_title, video_submitter, message)
                 elif "shorts" in message.content and not yt.check_url(message.content):
                     short_info = yt.get_short_info(message.content)
-                    video_submitter = message.author.id
+                    video_submitter = str(message.author.id)
                     video_title = short_info.title
                     video_length = short_info.length
                     if video_submitter in bot.thread_list.keys() and ((bot.thread_list[video_submitter]["num_vids"] + 1) <= bot.max_videos and (bot.thread_list[video_submitter]["length_vids"] + video_length) <= bot.max_length):
@@ -373,7 +395,9 @@ async def get_thread_messages():
                         hf.video_list_new(
                             bot.thread_list, video_length, video_title, video_submitter, message)
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # makes sure the thread has the proper amount of messages and time-lengths
 
@@ -395,7 +419,9 @@ async def delete_thread_messages():
                     bot.thread_list[user]['messages'] = message_copy
                     bot.thread_list[user]['youtube_videos'] = bot.thread_list[user]['youtube_videos'][:-1]
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 async def set_globals():
     try:
@@ -446,7 +472,9 @@ async def update(ctx):
         await get_thread_messages()
         await delete_thread_messages()
     except Exception as e:
-        await print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # check if the newest thread is stored
 
@@ -460,7 +488,9 @@ async def check_thread(ctx):
         else:
             await ctx.send("``The thread " + str(bot.current_thread.name) + " is stored``", delete_after=60)
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # run the daily run commands
 
@@ -471,7 +501,9 @@ async def run_dailies(ctx):
         await update_list_task()
         await ctx.message.delete()
     except Exception as e:
-        print(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 # error for the improper role
 
