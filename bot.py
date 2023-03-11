@@ -139,15 +139,15 @@ async def on_message(message):
 async def delete_video_name(ctx, *, video_name: str):
     try:
         if bot.thread_list:
-            original_number = bot.thread_list[ctx.author.id]["num_vids"]
-            if ctx.author.id in bot.thread_list:
+            original_number = bot.thread_list[str(ctx.author.id)]["num_vids"]
+            if str(ctx.author.id) in bot.thread_list:
                 # note the list goes in reverse to go from the top of the channel and the index is -1 to ensure we don't lose our place after deleting
                 index = -1
-                for video in reversed(bot.thread_list[ctx.author.id]["youtube_videos"]):
-                    increase = await hf.delete_video_by_name(bot.thread_list, "title", video, ctx.author.id, index, video_name)
+                for video in reversed(bot.thread_list[str(ctx.author.id)]["youtube_videos"]):
+                    increase = await hf.delete_video_by_name(bot.thread_list, "title", video, str(ctx.author.id), index, video_name)
                     if increase:
                         index -= 1
-        if original_number != bot.thread_list[ctx.author.id]["num_vids"]:
+        if original_number != bot.thread_list[str(ctx.author.id)]["num_vids"]:
             await ctx.send(str(ctx.author.mention) + " Video(s) with title: " + video_name + " was deleted!", delete_after=60)
         else:
             await ctx.send(str(ctx.author.mention) + " Video(s) with title: " + video_name + " was not found!", delete_after=60)
@@ -162,12 +162,12 @@ async def delete_video_name(ctx, *, video_name: str):
 async def delete_video_num(ctx, *, video_index: str):
     try:
         if bot.thread_list:
-            if ctx.author.id in bot.thread_list:
+            if str(ctx.author.id) in bot.thread_list:
                 index = int(video_index) - 1
-                original_number = bot.thread_list[ctx.author.id]["num_vids"]
-                video_name = bot.thread_list[ctx.author.id]["youtube_videos"][index]["title"]
-                await hf.delete_video_by_num(bot.thread_list, ctx.author.id, index)
-            if original_number != bot.thread_list[ctx.author.id]["num_vids"]:
+                original_number = bot.thread_list[str(ctx.author.id)]["num_vids"]
+                video_name = bot.thread_list[str(ctx.author.id)]["youtube_videos"][index]["title"]
+                await hf.delete_video_by_num(bot.thread_list, str(ctx.author.id), index)
+            if original_number != bot.thread_list[str(ctx.author.id)]["num_vids"]:
                 await ctx.send(str(ctx.author.mention) + " Video(s) with title: " + video_name + " was deleted!", delete_after=60)
     except Exception as e:
         await ctx.send(str(ctx.author.mention) + " something went wrong! Make sure you put in an appropriate index :kermitW: . Type !help if you aren't sure what that means.", delete_after=60)
@@ -181,7 +181,7 @@ async def delete_video_num(ctx, *, video_index: str):
 @bot.command(name="check-videos", description="Checks how many videos you have in queue, what videos you entered, and the total length of the videos")
 async def check_videos(ctx):
     try:
-        user = ctx.author.id
+        user = str(ctx.author.id)
         inList = False
         endString = ""
         for thread_user in bot.thread_list:
@@ -203,7 +203,7 @@ async def check_videos(ctx):
                 endString += "``"
             if inList:
                 break
-        if not inList or bot.thread_list[ctx.author.id]["num_vids"] == 0:
+        if not inList or bot.thread_list[str(ctx.author.id)]["num_vids"] == 0:
             await ctx.send("``You don't have any videos in the thread!``", delete_after=60)
             return
         else:

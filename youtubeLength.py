@@ -4,7 +4,8 @@ import re
 from dotenv import load_dotenv
 import requests
 from pytube import YouTube
-
+from pytube import exceptions
+from datetime import datetime
 
 def url_to_time(url):
     try:
@@ -14,11 +15,16 @@ def url_to_time(url):
             if check_link(text):
                 final_url = text
         return YouTube(url=str(final_url)).length
-    except:
+    except exceptions.RegexMatchError:
+        print("setting default time value")
+        return 300
+    except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(e)
         print(exc_type, fname, exc_tb.tb_lineno)
-
+        print("setting default time value")
+        return 300
 
 def url_to_title(url):
     try:
@@ -28,11 +34,14 @@ def url_to_title(url):
             if check_link(text):
                 final_url = text
         return YouTube(url=str(final_url)).title
+    except exceptions.PytubeError:
+        return "Title not found: ID-" + str(datetime.now())
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno)
-        return "Title not found"
+        print("setting default title")
+        return "Title not found: ID-" + str(datetime.now())
 
 
 def check_link(url):
