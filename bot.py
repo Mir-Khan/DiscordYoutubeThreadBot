@@ -83,6 +83,7 @@ async def on_message(message):
                 # if they have, their message is deleted and they're told to delete a video using the bot command
                 reason = hf.reason_gen(bot.thread_list[video_submitter]["num_vids"] + 1,
                                        bot.thread_list[video_submitter]["length_vids"] + video_length, bot.max_videos, bot.max_length, video_length, bot.max_individual_video_length)
+                print(reason)
                 await message.delete()
                 await bot.current_thread.send(str(message.author.mention) + 'Please delete a video/short using the bot command **!delete title** before submitting another video. ' + reason, delete_after=60)
             elif video_submitter not in bot.thread_list.keys() and video_length < bot.max_individual_video_length:
@@ -106,6 +107,7 @@ async def on_message(message):
                 # if they have, their message is deleted and they're told to delete a video using the bot command
                 reason = hf.reason_gen(bot.thread_list[video_submitter]["num_vids"] + 1,
                                        bot.thread_list[video_submitter]["length_vids"] + video_length, bot.max_videos, bot.max_length, video_length, bot.max_individual_video_length)
+                print(reason)
                 await message.delete()
                 await bot.current_thread.send(str(message.author.mention) + 'Please delete a video/short using the bot command **!delete title** before submitting another video. ' + reason, delete_after=60)
             elif video_submitter not in bot.thread_list.keys() and video_length < bot.max_individual_video_length:
@@ -431,8 +433,8 @@ async def set_globals():
     except:
         # resort to defaults if not able to retreive environment
         bot.max_videos = 10
-        bot.max_length = 1860
-        bot.max_individual_video_length = 960
+        bot.max_length = 2700
+        bot.max_individual_video_length = 660
 # on bot start
 
 
@@ -451,10 +453,34 @@ async def update_list_task():
     await delete_thread_messages()
     print("done updating")
 
+# task to restart the bot so it isn't rate limited, seems like an issue
+@tasks.loop(hours=35)
+async def restart_bot():
+    await bot.close()
+    print("bot closed successfully")
+    await bot.connect()
+    print("bot reconnected successfully")
+
 ####################################################################### DEBUG COMMANDS AND ERROR HANDLING #######################################################################
 
-# prints the thread list to console
+# debug command used for testing failures in functions
 
+@bot.command(name="debug")
+@commands.has_any_role(DEV)
+async def debug_commands(ctx):
+    print(bot.thread_list)
+    await delete_thread_messages()
+    print(bot.thread_list)
+    print("done debugging")
+
+# command to restart the bot manually
+
+# prints the thread list to console
+@bot.command(name= 'restart')
+@commands.has_any_role(DEV)
+async def restart(ctx):
+  await restart_bot()
+  print("bot restarted")
 
 @bot.command(name="thread_list", description="Prints the thread list to console")
 @commands.has_any_role(DEV, ADMIN)
