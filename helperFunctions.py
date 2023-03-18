@@ -12,13 +12,13 @@ def reason_gen(number_vids, length, max_videos, max_length, video_length, max_vi
         isVideo = True
     reason = None
     if isLength and isNumber:
-        reason = "**You have 10 videos and over 30 minutes of content with this submission.**"
+        reason = "**You have 10 videos and over 45 minutes of content with this submission.**"
     elif isNumber:
         reason = "**You have 10 videos already.**"
     elif isLength and not isVideo:
-        reason = "**You have over 30 minutes of content with this submission.**"
+        reason = "**You have over 45 minutes of content with this submission.**"
     elif isVideo:
-        reason = "**Your video is longer than 15 minutes.**"
+        reason = "**Your video is longer than 10 minutes.**"
     return reason
 
 # if the author is already in the list this function is used
