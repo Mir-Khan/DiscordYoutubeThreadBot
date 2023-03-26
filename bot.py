@@ -447,19 +447,13 @@ async def on_ready():
 
 @tasks.loop(hours=24)
 async def update_list_task():
+    bot.thread_list = {}
+    bot.current_thread = None
     await set_globals()
     await update_current_thread()
     await get_thread_messages()
     await delete_thread_messages()
     print("done updating")
-
-# task to restart the bot so it isn't rate limited, seems like an issue
-@tasks.loop(hours=35)
-async def restart_bot():
-    await bot.close()
-    print("bot closed successfully")
-    await bot.connect()
-    print("bot reconnected successfully")
 
 ####################################################################### DEBUG COMMANDS AND ERROR HANDLING #######################################################################
 
@@ -540,4 +534,4 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CheckFailure):
         await ctx.send(str(ctx.author.mention) + " - HEY!! KNOCK IT OFF BOZO! YOU CAN'T USE THIS COMMAND!!", delete_after=10)
 
-bot.run(TOKEN)
+bot.run(TOKEN, reconnect=True)
